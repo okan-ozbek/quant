@@ -12,7 +12,6 @@ TCPServer::TCPServer(const Address& address, const Port& port)
     : TCPBase(Socket::Protocol::TCP, Observa::NetworkRole::SERVER, address, port)
 {
     Bind();
-    Listen();
 }
 
 TCPServer::~TCPServer()
@@ -24,6 +23,7 @@ TCPServer::~TCPServer()
 void TCPServer::Poll()
 {
     while (true) {
+        Listen();
         Accept();
 
         while (HasConnectedClients()) {
@@ -61,8 +61,8 @@ void TCPServer::Accept()
     }
 
     try {
-        clientSockets_.push_back(clientSocket);
         GetObserva().LogInfo("Accepted a new client connection");
+        clientSockets_.push_back(clientSocket);
     }
     catch (const std::exception& exception) {
         closesocket(clientSocket);
