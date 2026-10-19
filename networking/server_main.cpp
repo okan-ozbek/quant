@@ -10,12 +10,12 @@ int main()
         TCPServer server("127.0.0.1", 8080);
     }
     catch (const std::exception& exception) {
-        std::cerr << "Error: " << exception.what() << std::endl;
+        std::cerr << "Error: " << exception.what() << "\n";
         std::cin.get();
         return EXIT_FAILURE;
     }
 
-    std::cout << "Press Enter to exit..." << std::endl;
+    std::cout << "Press Enter to exit..." << "\n";
     std::cin.get();
 
     return 0;

@@ -56,5 +56,4 @@ state assumptions and uncertainty. Do not claim to have run tools or benchmarks
 unless you did, or imply that review proves the absence of UB or leaks.
 
 For follow-up discussion in Copilot Chat, coach the author through the reasoning
-and challenge unsupported answers. Use the existing .clang-tidy file as analysis
-guidance; its presence alone does not mean analysis has run.
+and challenge unsupported answers.

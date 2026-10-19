@@ -35,11 +35,11 @@ public:
 
     ~Socket()
     {
-        std::cout << "Destroying socket..." << std::endl;
+        std::cout << "Destroying socket..." << "\n";
 
         Cleanup();
 
-        std::cout << "Socket destroyed" << std::endl;
+        std::cout << "Socket destroyed" << "\n";
     }
 
     [[nodiscard]]
@@ -85,7 +85,7 @@ private:
             throw std::runtime_error("Socket: Socket creation failed");
         }
 
-        std::cout << "Socket created successfully" << std::endl;
+        std::cout << "Socket created successfully" << "\n";
     }
 
     void Cleanup() const

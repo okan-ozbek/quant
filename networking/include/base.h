@@ -24,12 +24,12 @@ public:
 
     void LogInfo(const std::string& message) const
     {
-        std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << std::endl;
+        std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << "\n";
     }
 
     void LogError(const std::string& message) const
     {
-        std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << std::endl;
+        std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << "\n";
     }
 
     std::string ErrorMessage(const std::string& message) const
