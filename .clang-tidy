@@ -1,0 +1,12 @@
+# Advisory editor/local checks; this file does not start a CI job.
+# Analysis needs the correct Windows compiler flags and headers.
+Checks: >-
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  google-*,
+  -google-objc-*,
+  performance-*
+WarningsAsErrors: ''
+HeaderFilterRegex: '(^|[/\\])networking[/\\]'
+FormatStyle: Google
