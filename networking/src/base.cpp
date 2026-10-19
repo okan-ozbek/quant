@@ -53,8 +53,13 @@ TCPBase::Bytes TCPBase::Receive(const SOCKET& socket) const
 {
     constexpr int headerSize{ 4 };
     Bytes bytes(headerSize);
+    int receivedBytes{ 0 };
 
-    FillBuffer(socket, reinterpret_cast<char*>(bytes.data()), headerSize);
+    receivedBytes = FillBuffer(socket, reinterpret_cast<char*>(bytes.data()), headerSize);
+
+    if (receivedBytes == GRACEFUL_DISCONNECT) {
+        return {};
+    }
 
     std::uint32_t messageLength{ 0 };
     for (std::size_t i = 0; i < sizeof(messageLength); ++i) {
@@ -70,28 +75,30 @@ TCPBase::Bytes TCPBase::Receive(const SOCKET& socket) const
     }
 
     bytes.resize(headerSize + messageLength);
-    FillBuffer(socket, reinterpret_cast<char*>(bytes.data() + headerSize), messageLength);
+    receivedBytes = FillBuffer(socket, reinterpret_cast<char*>(bytes.data() + headerSize), messageLength);
+
+    if (receivedBytes == GRACEFUL_DISCONNECT) {
+        return {};
+    }
 
     return bytes;
 }
 
-void TCPBase::FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& size) const
+int TCPBase::FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& size) const
 {
     int received = 0;
 
     while (received < size) {
         const int result = recv(socket, buffer + received, size - received, 0);
 
-        if (result == SOCKET_ERROR) {
-            throw std::runtime_error(GetObserva().ErrorMessage("Unable to receive from client"));
-        }
-
-        if (result == 0) {
-            throw std::runtime_error(GetObserva().ErrorMessage("Peer is disconnected"));
+        if (result == GRACEFUL_DISCONNECT || result == SOCKET_ERROR) {
+            return GRACEFUL_DISCONNECT;;
         }
 
         received += result;
     }
+
+    return received;
 }
 
 const sockaddr* TCPBase::GetAddressInfo() const

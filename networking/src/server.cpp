@@ -29,6 +29,8 @@ void TCPServer::Poll()
         while (HasConnectedClients()) {
             Run();
         }
+
+        GetObserva().LogInfo("No connected clients. Waiting for new connections...");
     }
 }
 
@@ -70,7 +72,7 @@ void TCPServer::Accept()
     }
 }
 
-void TCPServer::Run() const
+void TCPServer::Run()
 {
     for (std::size_t i{}; i < clientSockets_.size(); ++i) {
         const auto& clientSocket{ clientSockets_[i] };
@@ -81,8 +83,14 @@ void TCPServer::Run() const
         }
 
         const auto payload = Receive(clientSocket);
-        const auto [textLength, text] = Decode(payload);
 
+        if (payload.empty()) {
+            GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): disconnected");
+            RemoveClientSocket(clientSocket, i);
+            continue;
+        }
+
+        const auto [textLength, text] = Decode(payload);
         GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): " + text);
     }
 }

@@ -25,8 +25,17 @@ private:
     void Bind() const;
     void Listen() const;
     void Accept();
-    void Run() const;
+    void Run();
     void Close() const;
+
+    void RemoveClientSocket(const SOCKET& clientSocket, std::size_t& index)
+    {
+        closesocket(clientSocket);
+        clientSockets_.erase(clientSockets_.begin() + index);
+
+        GetObserva().LogInfo("Total clients: " + std::to_string(clientSockets_.size()));
+        --index;
+    }
 
     [[nodiscard]]
     bool HasConnectedClients() const
