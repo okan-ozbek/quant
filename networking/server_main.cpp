@@ -8,6 +8,7 @@ int main()
 {
     try {
         TCPServer server("127.0.0.1", 8080);
+        server.Poll();
     }
     catch (const std::exception& exception) {
         std::cerr << "Error: " << exception.what() << "\n";

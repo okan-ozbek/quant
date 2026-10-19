@@ -13,28 +13,23 @@ TCPServer::TCPServer(const Address& address, const Port& port)
 {
     Bind();
     Listen();
-    Accept();
-
-    while (HasConnectedClients()) {
-        for (std::size_t i{}; i < clientSockets_.size(); ++i) {
-            const auto& clientSocket{ clientSockets_[i] };
-
-            if (clientSocket == INVALID_SOCKET) {
-                GetObserva().LogError("Invalid client socket");
-                continue;
-            }
-
-            const auto payload = Receive(clientSocket);
-            const auto [textLength, text] = Decode(payload);
-
-            GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): " + text);
-        }
-    }
 }
 
 TCPServer::~TCPServer()
 {
     Close();
+}
+
+[[noreturn]]
+void TCPServer::Poll()
+{
+    while (true) {
+        Accept();
+
+        while (HasConnectedClients()) {
+            Run();
+        }
+    }
 }
 
 void TCPServer::Bind() const
@@ -65,9 +60,31 @@ void TCPServer::Accept()
         throw std::runtime_error(GetObserva().ErrorMessage("Accept failed"));
     }
 
-    GetObserva().LogInfo("Accepted a new client connection");
+    try {
+        clientSockets_.push_back(clientSocket);
+        GetObserva().LogInfo("Accepted a new client connection");
+    }
+    catch (const std::exception& exception) {
+        closesocket(clientSocket);
+        throw std::runtime_error(GetObserva().ErrorMessage(std::string(exception.what())));
+    }
+}
 
-    clientSockets_.push_back(clientSocket);
+void TCPServer::Run() const
+{
+    for (std::size_t i{}; i < clientSockets_.size(); ++i) {
+        const auto& clientSocket{ clientSockets_[i] };
+
+        if (clientSocket == INVALID_SOCKET) {
+            GetObserva().LogError("Invalid client socket");
+            continue;
+        }
+
+        const auto payload = Receive(clientSocket);
+        const auto [textLength, text] = Decode(payload);
+
+        GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): " + text);
+    }
 }
 
 void TCPServer::Close() const

@@ -6,6 +6,11 @@
 #define QUANT_BASE_H
 
 #include <vector>
+#include <string>
+#include <cstdint>
+#include <iostream>
+#include <cstddef>
+#include <winsock2.h>
 
 #include "../include/socket.h"
 

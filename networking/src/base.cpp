@@ -12,7 +12,11 @@ TCPBase::TCPBase(const Socket::Protocol& protocol, const Observa::NetworkRole& n
     }
     , observa_{ networkRole }
 {
-    InetPton(AF_INET, addressInfo.c_str(), &addressInfo_.sin_addr);
+    const auto result = InetPton(AF_INET, addressInfo.c_str(), &addressInfo_.sin_addr);
+
+    if (result <= 0) {
+        throw std::runtime_error(GetObserva().ErrorMessage("Invalid address"));
+    }
 
     if (socket_.IsInvalid()) {
         throw std::runtime_error(GetObserva().ErrorMessage("Invalid socket"));
@@ -58,7 +62,7 @@ TCPBase::Bytes TCPBase::Receive(const SOCKET& socket) const
     }
 
     if (messageLength == 0) {
-        return Bytes{};
+        return bytes;
     }
 
     if (messageLength > MAX_PAYLOAD_SIZE) {
