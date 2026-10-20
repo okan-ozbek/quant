@@ -97,7 +97,12 @@ void TCPServer::Run()
 
 void TCPServer::Close() const
 {
-    for (const auto& clientSocket : clientSockets_) {
-        closesocket(clientSocket);
+    for (std::size_t i{}; i < clientSockets_.size(); ++i) {
+        const auto& clientSocket{ clientSockets_[i] };
+
+        if (clientSocket != INVALID_SOCKET) {
+            closesocket(clientSocket);
+            GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): connection closed");
+        }
     }
 }
