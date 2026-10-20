@@ -24,9 +24,9 @@ void TCPServer::Poll()
 {
     while (true) {
         Listen();
-        Accept();
 
         while (HasConnectedClients()) {
+            Accept();
             Run();
         }
 
@@ -97,12 +97,9 @@ void TCPServer::Run()
 
 void TCPServer::Close() const
 {
-    for (std::size_t i{}; i < clientSockets_.size(); ++i) {
-        const auto& clientSocket{ clientSockets_[i] };
-
+    for (const auto& clientSocket : clientSockets_) {
         if (clientSocket != INVALID_SOCKET) {
             closesocket(clientSocket);
-            GetObserva().LogInfo("(Client " + std::to_string(i + 1) + "): connection closed");
         }
     }
 }

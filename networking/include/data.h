@@ -12,6 +12,8 @@
 #include <cstddef>
 #include <stdexcept>
 
+#include "base.h"
+
 using Bytes = std::vector<std::byte>;
 
 struct Data
@@ -22,6 +24,10 @@ struct Data
 
 inline Bytes Encode(const std::string& data)
 {
+    if (data.size() > MAX_PAYLOAD_SIZE) {
+        throw std::runtime_error("Payload size exceeds maximum limit");
+    }
+
     Data dataPacket{ static_cast<std::uint32_t>(data.size()), data };
 
     Bytes bytes(sizeof(dataPacket.textLength) + dataPacket.text.size());
@@ -33,10 +39,6 @@ inline Bytes Encode(const std::string& data)
 
     if (dataPacket.textLength != dataPacket.text.size()) {
         throw std::runtime_error("Text length does not match actual text size");
-    }
-
-    if (dataPacket.text.size() > MAX_PAYLOAD_SIZE || dataPacket.textLength > MAX_PAYLOAD_SIZE) {
-        throw std::runtime_error("Payload size exceeds maximum limit");
     }
 
     // Encode text

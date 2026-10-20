@@ -71,7 +71,8 @@ TCPBase::Bytes TCPBase::Receive(const SOCKET& socket) const
     }
 
     if (messageLength > MAX_PAYLOAD_SIZE) {
-        throw std::runtime_error(GetObserva().ErrorMessage("Message length exceeds maximum allowed size (1 MB)"));
+        GetObserva().LogError("Message length exceeds maximum allowed size (1 MB), disconnecting client");
+        return {};
     }
 
     bytes.resize(headerSize + messageLength);
@@ -91,8 +92,13 @@ int TCPBase::FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& siz
     while (received < size) {
         const int result = recv(socket, buffer + received, size - received, 0);
 
-        if (result == GRACEFUL_DISCONNECT || result == SOCKET_ERROR) {
+        if (result == GRACEFUL_DISCONNECT) {
             return GRACEFUL_DISCONNECT;;
+        }
+
+        if (result == SOCKET_ERROR) {
+            GetObserva().LogError("Client disconnected prematurely: " + std::to_string(WSAGetLastError()));
+            return GRACEFUL_DISCONNECT;
         }
 
         received += result;
