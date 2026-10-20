@@ -8,9 +8,11 @@
 #include <cstdint>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+
+#define SOCKET_BLOCKING_MODE 0
+#define SOCKET_NON_BLOCKING_MODE 1
 
 class Socket
 {
@@ -35,11 +37,11 @@ public:
 
     ~Socket()
     {
-        std::cout << "Destroying socket..." << std::endl;
+        std::cout << "Destroying socket..." << "\n";
 
         Cleanup();
 
-        std::cout << "Socket destroyed" << std::endl;
+        std::cout << "Socket destroyed" << "\n";
     }
 
     [[nodiscard]]
@@ -85,7 +87,15 @@ private:
             throw std::runtime_error("Socket: Socket creation failed");
         }
 
-        std::cout << "Socket created successfully" << std::endl;
+        // u_long mode = SOCKET_NON_BLOCKING_MODE;
+        // const auto result = ioctlsocket(socket_, FIONBIO, &mode);
+        //
+        // if (result != NO_ERROR) {
+        //     Cleanup();
+        //     throw std::runtime_error("Socket: Failed to set non-blocking mode");
+        // }
+
+        std::cout << "Socket created successfully" << "\n";
     }
 
     void Cleanup() const

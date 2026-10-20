@@ -12,6 +12,7 @@ class TCPClient : public TCPBase
 public:
     TCPClient(const Address& address, const Port& port);
 
+private:
     void Connect() const;
 };
 

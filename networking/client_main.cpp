@@ -14,14 +14,15 @@ int main()
             std::string message{};
 
             std::cout << "Message: ";
-            std::getline(std::cin, message);
+            if (!std::getline(std::cin, message)) {
+                break;
+            }
 
-            Data data{ static_cast<std::uint32_t>(message.size()), message };
-            client.Send(client.GetSocket(), Encode(data));
+            client.Send(client.GetSocket(), Encode(message));
         }
     }
     catch (const std::exception& exception) {
-        std::cerr << exception.what() << std::endl;
+        std::cerr << exception.what() << "\n";
         return EXIT_FAILURE;
     }
 

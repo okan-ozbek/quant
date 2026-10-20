@@ -5,11 +5,9 @@
 #ifndef QUANT_SERVER_H
 #define QUANT_SERVER_H
 
-#include <cstring>
 #include <vector>
 
 #include "base.h"
-#include "data.h"
 #include "socket.h"
 
 class TCPServer : public TCPBase
@@ -18,14 +16,26 @@ public:
     TCPServer(const Address& address, const Port& port);
     ~TCPServer();
 
-    void Bind() const;
-    void Listen() const;
-    void Accept();
-
-    void Close() const;
+    [[noreturn]]
+    void Poll();
 
 private:
     std::vector<SOCKET> clientSockets_{};
+
+    void Bind() const;
+    void Listen() const;
+    void Accept();
+    void Run();
+    void Close() const;
+
+    void RemoveClientSocket(const SOCKET& clientSocket, std::size_t& index)
+    {
+        closesocket(clientSocket);
+        clientSockets_.erase(clientSockets_.begin() + index);
+
+        GetObserva().LogInfo("Total clients: " + std::to_string(clientSockets_.size()));
+        --index;
+    }
 
     [[nodiscard]]
     bool HasConnectedClients() const

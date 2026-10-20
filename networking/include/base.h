@@ -6,10 +6,16 @@
 #define QUANT_BASE_H
 
 #include <vector>
+#include <string>
+#include <cstdint>
+#include <iostream>
+#include <cstddef>
+#include <winsock2.h>
 
 #include "../include/socket.h"
 
 #define MAX_PAYLOAD_SIZE 1024 * 1024 // 1 MB
+#define GRACEFUL_DISCONNECT 0
 
 class Observa
 {
@@ -24,12 +30,12 @@ public:
 
     void LogInfo(const std::string& message) const
     {
-        std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << std::endl;
+        std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << "\n";
     }
 
     void LogError(const std::string& message) const
     {
-        std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << std::endl;
+        std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << "\n";
     }
 
     std::string ErrorMessage(const std::string& message) const
@@ -78,7 +84,7 @@ class TCPBase
 
     ByteCount Send(const SOCKET& socket, const Bytes& bytes) const;
     Bytes Receive(const SOCKET& socket) const;
-    void FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& size) const;
+    int FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& size) const;
 
     const sockaddr* GetAddressInfo() const;
     const SOCKET& GetSocket() const;
