@@ -24,9 +24,9 @@ void TCPServer::Poll()
 {
     while (true) {
         Listen();
+        Accept();
 
         while (HasConnectedClients()) {
-            Accept();
             Run();
         }
 
