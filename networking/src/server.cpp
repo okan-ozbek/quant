@@ -5,7 +5,6 @@
 #include "../include/server.h"
 
 #include "../include/base.h"
-#include "../include/base.h"
 #include "../include/data.h"
 
 TCPServer::TCPServer(const Address& address, const Port& port)
@@ -22,6 +21,13 @@ TCPServer::~TCPServer()
 [[noreturn]]
 void TCPServer::Poll()
 {
+    // TODO plan how to make a non-blocking multi-client TCP server
+    // resources:
+    // - https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-ioctlsocket
+    // - https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll
+    // - https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-select
+    // - https://beej.us/guide/bgnet/html/split-wide/slightly-advanced-techniques.html
+
     while (true) {
         Listen();
         Accept();
@@ -102,4 +108,18 @@ void TCPServer::Close() const
             closesocket(clientSocket);
         }
     }
+}
+
+void TCPServer::RemoveClientSocket(const SOCKET& clientSocket, std::size_t& index)
+{
+    closesocket(clientSocket);
+    clientSockets_.erase(clientSockets_.begin() + index);
+
+    GetObserva().LogInfo("Total clients: " + std::to_string(clientSockets_.size()));
+    --index;
+}
+
+bool TCPServer::HasConnectedClients() const
+{
+    return !clientSockets_.empty();
 }

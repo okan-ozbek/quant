@@ -12,53 +12,11 @@
 #include <cstddef>
 #include <winsock2.h>
 
+#include "observa.h"
 #include "../include/socket.h"
 
-#define MAX_PAYLOAD_SIZE 1024 * 1024 // 1 MB
+#define MAX_PAYLOAD_SIZE (1024 * 1024) // 1 MB
 #define GRACEFUL_DISCONNECT 0
-
-class Observa
-{
-public:
-    enum class NetworkRole
-    {
-        SERVER,
-        CLIENT
-    };
-
-    explicit Observa(const NetworkRole role) : networkRole_{ role } {}
-
-    void LogInfo(const std::string& message) const
-    {
-        std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << "\n";
-    }
-
-    void LogError(const std::string& message) const
-    {
-        std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << "\n";
-    }
-
-    std::string ErrorMessage(const std::string& message) const
-    {
-        return "[" + GetNetworkRoleString() + " ERROR]: " + message;
-    }
-
-private:
-    NetworkRole networkRole_;
-
-    std::string GetNetworkRoleString() const
-    {
-        switch (networkRole_)
-        {
-            case NetworkRole::SERVER:
-                return "SERVER";
-            case NetworkRole::CLIENT:
-                return "CLIENT";
-            default:
-                return "";
-        }
-    }
-};
 
 class TCPBase
 {
@@ -76,19 +34,19 @@ class TCPBase
     TCPBase& operator=(TCPBase&&) = delete;
 
     TCPBase(
-        const Socket::Protocol& protocol,
-        const Observa::NetworkRole& networkRole,
-        const Address& addressInfo,
-        const Port& port
+        const Socket::Protocol&,
+        const Observa::NetworkRole&,
+        const Address&,
+        const Port&
     );
 
-    ByteCount Send(const SOCKET& socket, const Bytes& bytes) const;
-    Bytes Receive(const SOCKET& socket) const;
-    int FillBuffer(const SOCKET& socket, char* buffer, const ByteCount& size) const;
+    void Send(const SOCKET&, const Bytes&) const;
+    [[nodiscard]] Bytes Receive(const SOCKET&) const;
+    int FillBuffer(const SOCKET&, char*, const ByteCount&) const;
 
-    const sockaddr* GetAddressInfo() const;
-    const SOCKET& GetSocket() const;
-    const Observa& GetObserva() const;
+    [[nodiscard]] const sockaddr* GetAddressInfo() const;
+    [[nodiscard]] const SOCKET& GetSocket() const;
+    [[nodiscard]] const Observa& GetObserva() const;
 
 private:
     Socket socket_;
