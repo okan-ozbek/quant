@@ -20,9 +20,9 @@ public:
 
     explicit Observa(NetworkRole);
 
-    void LogInfo(const std::string&) const;
-    void LogError(const std::string&) const;
-    [[nodiscard]] std::string ErrorMessage(const std::string&) const;
+    void LogInfo(const std::string_view&) const;
+    void LogError(const std::string_view&) const;
+    [[nodiscard]] std::string ErrorMessage(const std::string_view&) const;
 
 
 

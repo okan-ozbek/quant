@@ -12,19 +12,19 @@ Observa::Observa(const NetworkRole role)
 
 }
 
-void Observa::LogInfo(const std::string& message) const
+void Observa::LogInfo(const std::string_view& message) const
 {
     std::cout << "[" << GetNetworkRoleString() << " INFO]: " << message << "\n";
 }
 
-void Observa::LogError(const std::string& message) const
+void Observa::LogError(const std::string_view& message) const
 {
     std::cerr << "[" << GetNetworkRoleString() << " ERROR]: " << message << "\n";
 }
 
-[[nodiscard]] std::string Observa::ErrorMessage(const std::string& message) const
+[[nodiscard]] std::string Observa::ErrorMessage(const std::string_view& message) const
 {
-    return "[" + GetNetworkRoleString() + " ERROR]: " + message;
+    return "[" + GetNetworkRoleString() + " ERROR]: " + message.data();
 }
 
 [[nodiscard]] std::string Observa::GetNetworkRoleString() const
