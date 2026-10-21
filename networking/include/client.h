@@ -10,7 +10,7 @@
 class TCPClient : public TCPBase
 {
 public:
-    TCPClient(const Address& address, const Port& port);
+    TCPClient(const Address&, const Port&);
 
 private:
     void Connect() const;

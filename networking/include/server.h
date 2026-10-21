@@ -13,11 +13,10 @@
 class TCPServer : public TCPBase
 {
 public:
-    TCPServer(const Address& address, const Port& port);
+    TCPServer(const Address&, const Port&);
     ~TCPServer();
 
-    [[noreturn]]
-    void Poll();
+    [[noreturn]] void Poll();
 
 private:
     std::vector<SOCKET> clientSockets_{};
@@ -27,21 +26,8 @@ private:
     void Accept();
     void Run();
     void Close() const;
-
-    void RemoveClientSocket(const SOCKET& clientSocket, std::size_t& index)
-    {
-        closesocket(clientSocket);
-        clientSockets_.erase(clientSockets_.begin() + index);
-
-        GetObserva().LogInfo("Total clients: " + std::to_string(clientSockets_.size()));
-        --index;
-    }
-
-    [[nodiscard]]
-    bool HasConnectedClients() const
-    {
-        return !clientSockets_.empty();
-    }
+    void RemoveClientSocket(const SOCKET&, std::size_t&);
+    [[nodiscard]] bool HasConnectedClients() const;
 };
 
 // TODO: Implement UDPServer class

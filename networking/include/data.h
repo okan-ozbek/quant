@@ -28,7 +28,7 @@ inline Bytes Encode(const std::string& data)
         throw std::runtime_error("Payload size exceeds maximum limit");
     }
 
-    Data dataPacket{ static_cast<std::uint32_t>(data.size()), data };
+    const Data dataPacket{ static_cast<std::uint32_t>(data.size()), data };
 
     Bytes bytes(sizeof(dataPacket.textLength) + dataPacket.text.size());
 

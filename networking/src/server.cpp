@@ -5,7 +5,6 @@
 #include "../include/server.h"
 
 #include "../include/base.h"
-#include "../include/base.h"
 #include "../include/data.h"
 
 TCPServer::TCPServer(const Address& address, const Port& port)
@@ -109,4 +108,18 @@ void TCPServer::Close() const
             closesocket(clientSocket);
         }
     }
+}
+
+void TCPServer::RemoveClientSocket(const SOCKET& clientSocket, std::size_t& index)
+{
+    closesocket(clientSocket);
+    clientSockets_.erase(clientSockets_.begin() + index);
+
+    GetObserva().LogInfo("Total clients: " + std::to_string(clientSockets_.size()));
+    --index;
+}
+
+bool TCPServer::HasConnectedClients() const
+{
+    return !clientSockets_.empty();
 }

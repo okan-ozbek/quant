@@ -4,6 +4,8 @@
 
 #include "../include/base.h"
 
+#include <WS2tcpip.h>
+
 TCPBase::TCPBase(const Socket::Protocol& protocol, const Observa::NetworkRole& networkRole, const Address& addressInfo, const Port& port)
     : socket_{ protocol }
     , addressInfo_{
@@ -23,7 +25,7 @@ TCPBase::TCPBase(const Socket::Protocol& protocol, const Observa::NetworkRole& n
     }
 }
 
-TCPBase::ByteCount TCPBase::Send(const SOCKET& socket, const Bytes& bytes) const
+void TCPBase::Send(const SOCKET& socket, const Bytes& bytes) const
 {
     if (socket == INVALID_SOCKET) {
         throw std::runtime_error(GetObserva().ErrorMessage("Invalid socket"));
@@ -45,8 +47,6 @@ TCPBase::ByteCount TCPBase::Send(const SOCKET& socket, const Bytes& bytes) const
 
         GetObserva().LogInfo("Sending " + std::to_string(sentBytes) + " bytes...");
     }
-
-    return bufferSize;
 }
 
 TCPBase::Bytes TCPBase::Receive(const SOCKET& socket) const
