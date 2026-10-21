@@ -24,7 +24,14 @@ void Observa::LogError(const std::string_view& message) const
 
 [[nodiscard]] std::string Observa::ErrorMessage(const std::string_view& message) const
 {
-    return "[" + GetNetworkRoleString() + " ERROR]: " + message.data();
+    std::string output;
+
+    output.reserve(GetNetworkRoleString().size() + 10 + message.size());
+
+    output += "[" + GetNetworkRoleString() + " ERROR]: ";
+    output.append(message.data(), message.size());
+
+    return output;
 }
 
 [[nodiscard]] std::string Observa::GetNetworkRoleString() const
